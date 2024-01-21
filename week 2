@@ -1,0 +1,93 @@
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.Scanner;
+
+public class SimpleLinkShortener {
+
+    private Map<String, String> shortToOriginalMap;
+    private Map<String, String> originalToShortMap;
+    private static final String CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private static final int SHORT_CODE_LENGTH = 6;
+
+    public SimpleLinkShortener() {
+        shortToOriginalMap = new HashMap<>();
+        originalToShortMap = new HashMap<>();
+    }
+
+    public String shortenLink(String originalUrl) {
+        if (originalToShortMap.containsKey(originalUrl)) {
+            return originalToShortMap.get(originalUrl);
+        }
+
+        String shortCode = generateShortCode();
+        shortToOriginalMap.put(shortCode, originalUrl);
+        originalToShortMap.put(originalUrl, shortCode);
+
+        return shortCode;
+    }
+
+    public String getOriginalLink(String shortCode) {
+        return shortToOriginalMap.get(shortCode);
+    }
+
+    private String generateShortCode() {
+        StringBuilder shortCode = new StringBuilder();
+        Random random = new Random();
+
+        for (int i = 0; i < SHORT_CODE_LENGTH; i++) {
+            int randomIndex = random.nextInt(CHARACTERS.length());
+            shortCode.append(CHARACTERS.charAt(randomIndex));
+        }
+
+        return shortCode.toString();
+    }
+
+    public static void main(String[] args) {
+        SimpleLinkShortener linkShortener = new SimpleLinkShortener();
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("1. Shorten a link");
+            System.out.println("2. Retrieve original link");
+            System.out.println("3. Exit");
+            System.out.print("Choose an option: ");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // consume the newline character
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter the original URL: ");
+                    String originalUrl = scanner.nextLine();
+                    String shortCode = linkShortener.shortenLink(originalUrl);
+                    System.out.println("Shortened URL: https://short.url/" + shortCode);
+                    break;
+
+                case 2:
+                    System.out.print("Enter the short code: ");
+                    String inputCode = scanner.nextLine();
+                    String retrievedOriginalUrl = linkShortener.getOriginalLink(inputCode);
+                    if (retrievedOriginalUrl != null) {
+                        System.out.println("Original URL: " + retrievedOriginalUrl);
+                    } else {
+                        System.out.println("Invalid short code.");
+                    }
+                    break;
+
+                case 3:
+                    System.out.println("Exiting the program.");
+                    scanner.close();
+                    System.exit(0);
+
+                default:
+                    System.out.println("Invalid option. Please choose again.");
+                    break;
+            }
+        }
+    }
+}
+
+
+  
+
